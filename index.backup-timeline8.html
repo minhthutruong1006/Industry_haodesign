@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BRAND COMMUNICATION</title>
+<meta name="description" content="반응형 웹사이트·프로모션 페이지 제작 에이전시">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/static/woff2/SUIT.css" rel="stylesheet">
+<style>
+/* ===== 브랜드 교체 시 여기만 수정 ===== */
+:root{
+  --ink:#0d0d0d; --bg:#fff; --gray:#f4f4f6; --line:#e6e6ea;
+  --navy:#081427; --blue:#1f2fd1; --deep:#0b2f9f; --orange:#ff6f3c;
+  --pink:#f07bdc; --lime:#c6e83a; --mint:#36f0b4;
+  --grad:linear-gradient(90deg,#36f0b4 0%,#9bdc8f 30%,#86c4d8 60%,#c99be0 100%);
+  --en:'Poppins',sans-serif; --ko:'SUIT','Pretendard','Malgun Gothic',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+/* scroll-behavior:smooth는 ScrollTrigger 위치 계산을 틀어지게 해서 쓰지 않음 */
+body{font-family:var(--ko);color:var(--ink);background:var(--bg);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;border:0;background:none;cursor:pointer;color:inherit}
+ul{list-style:none}
+.en{font-family:var(--en)}
+.inner{max-width:1400px;margin:0 auto;padding:0 40px}
+
+/* ===== Header ===== */
+.header{position:fixed;inset:0 0 auto;height:100px;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 50px;transition:background .3s,height .3s}
+.header.scrolled{height:76px;background:rgba(255,255,255,.85);backdrop-filter:blur(10px)}
+.header.on-dark:not(.scrolled){color:#fff}
+.logo{font-family:var(--en);font-weight:800;font-size:22px;letter-spacing:-.5px}
+.logo span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.header_r{display:flex;align-items:center;gap:22px}
+.pill{font-family:var(--en);font-size:13px;font-weight:600;border:1.5px solid currentColor;border-radius:30px;padding:7px 16px}
+.burger{width:44px;height:44px;position:relative;z-index:120}
+.burger i{position:absolute;left:8px;right:8px;height:2px;background:currentColor;transition:.4s cubic-bezier(.7,0,.3,1)}
+.burger i:nth-child(1){top:16px}.burger i:nth-child(2){top:26px;left:18px}
+body.menu-open .burger{color:#fff}
+body.menu-open .burger i:nth-child(1){top:21px;transform:rotate(45deg)}
+body.menu-open .burger i:nth-child(2){top:21px;left:8px;transform:rotate(-45deg)}
+.sitemap{position:fixed;inset:0;z-index:110;background:var(--navy);color:#fff;clip-path:circle(0% at calc(100% - 72px) 50px);transition:clip-path .8s cubic-bezier(.7,0,.3,1);display:flex;align-items:center;padding:0 10vw}
+body.menu-open .sitemap{clip-path:circle(150% at calc(100% - 72px) 50px)}
+.sitemap ul li{overflow:hidden}
+.sitemap ul a{display:block;font-family:var(--en);font-weight:800;font-size:clamp(48px,8vw,120px);line-height:1.1;transform:translateY(100%);transition:transform .6s cubic-bezier(.2,.7,.2,1),color .3s}
+body.menu-open .sitemap ul a{transform:none}
+.sitemap ul li:nth-child(2) a{transition-delay:.05s}.sitemap ul li:nth-child(3) a{transition-delay:.1s}.sitemap ul li:nth-child(4) a{transition-delay:.15s}
+.sitemap ul a:hover{color:transparent;-webkit-text-stroke:1.5px #fff}
+.sitemap .side{margin-left:auto;font-size:15px;line-height:2;opacity:.7}
+
+/* ===== Hero ===== */
+/* 예손 방식 3단계: ① 레드·블랙 그라데이션 글자 → ② 스크롤하면 색이 빠지며 글자 속 영상 → ③ 글자가 확대되며 영상이 화면 전체로 */
+.hero{height:100vh;position:relative;overflow:hidden;background:#fff;isolation:isolate}
+.hero_media{position:absolute;inset:0;overflow:hidden;background:#1a1a1a}
+/* 흰 바탕+검은 글자를 screen 합성 → 검은 글자 자리로만 영상이 비침 */
+/* will-change:transform은 레이어 타일 경계에 1px 세로줄(뒤 장면이 비침)을 만들어서 쓰지 않음 */
+.hero_knock,.hero_grad{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.hero_media{visibility:hidden}
+.hero_knock{background:#fff;color:#000;mix-blend-mode:screen}
+.hero_grad{pointer-events:none}
+.hero_word{position:relative;font-family:var(--en);font-weight:800;font-size:clamp(52px,11vw,190px);letter-spacing:-.02em;line-height:1;margin:0}
+.hero_grad .txt{display:block;background:linear-gradient(100deg,#e83817 0%,#ff7a45 18%,#1a1a1a 38%,#e83817 55%,#3a3a3a 75%,#e83817 100%);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:flow 9s ease-in-out infinite alternate}
+/* 글자 안 장면 — 예손 영상 흐름을 GSAP 타임라인 하나로 이어 붙임 (기기 목업 자리는 하오 메인 영상):
+   엇갈려 흐르는 기울어진 열 → 간격 벌어짐 → 갈라지는 패널+단일 카드 → 원형 마스크 리빌 → 2×2 벌어짐+알약 띠 → 대각선 와이프 → 원형 패턴+카드 줄 → 영상 → 흩어진 카드 → 로고 */
+.scenes{position:absolute;inset:0;overflow:hidden;background:#fff}
+.sc{position:absolute;inset:0;overflow:hidden;visibility:hidden}
+.card{position:absolute;border-radius:12px;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.16);background:#ddd}
+.card img,.card video{display:block;width:100%;height:100%;object-fit:cover}
+/* 열 폭 고정: 간격이 벌어질 때 카드가 작아지지 않음 */
+.tilt{position:absolute;left:50%;top:50%;display:flex;gap:1.2vw}
+.tcol{width:22vw;display:flex;flex-direction:column;gap:1.2vw}
+.tcol .card img{backface-visibility:hidden}
+.tcol .card{position:relative;flex:none;aspect-ratio:16/10;border-radius:4px;box-shadow:0 6px 16px rgba(0,0,0,.1)}
+.g4{position:absolute;left:50%;top:50%;width:62vw;display:grid;grid-template-columns:1fr 1fr}
+.g4 .card{position:relative;aspect-ratio:16/9;border-radius:0;box-shadow:none}
+.hpill{position:absolute;left:30vw;top:-40vh;width:24vw;height:180vh;border-radius:12vw}
+.circ{position:absolute;border-radius:50%;background:#e83817}
+.circ.k{background:#1a1a1a}
+.row{position:absolute;top:50%;left:-13.2vw;display:flex;gap:1.6vw;margin-top:-8vw}
+.row .card,.mid{width:24vw;aspect-ratio:3/2;border-radius:10px}
+.row .card{position:relative;flex:none}
+.mid{left:38vw;top:50%;margin-top:-8vw}
+.logo_end{display:flex;align-items:center;justify-content:center;background:#f2f2f2}
+.logo_end b{font-family:var(--en);font-weight:800;font-size:7vw;letter-spacing:-.02em;color:#e83817}
+.logo_end b span{color:#222}
+.hero_word small{position:absolute;right:.05em;top:-.3em;font-size:.12em;font-weight:700;font-style:italic;color:#222}
+@keyframes flow{to{background-position:100% 0}}
+.mouse{position:absolute;bottom:34px;left:50%;width:22px;height:34px;margin-left:-11px;border:1.5px solid #aaa;border-radius:12px}
+.mouse::after{content:"";position:absolute;left:50%;top:7px;width:2px;height:7px;margin-left:-1px;background:#888;border-radius:2px;animation:wheel 1.6s infinite}
+@keyframes wheel{to{transform:translateY(10px);opacity:0}}
+
+/* ===== Showcase (hero 이어지는 포트폴리오 무대) ===== */
+.stage{height:100vh;position:relative;overflow:hidden;background:#fff}
+.stage_bg{position:absolute;top:50%;left:0;transform:translateY(-50%);white-space:nowrap;font-family:var(--en);font-weight:500;font-size:clamp(90px,13vw,200px);color:#f0f0f2;letter-spacing:-.01em}
+.stage_box{position:absolute;inset:6% 4% 14%;background:var(--gray);border-radius:4px;overflow:hidden}
+.mock{position:absolute;width:40%;aspect-ratio:16/10;border-radius:6px;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.18);background:#222}
+.mock .bar{height:6%;background:rgba(255,255,255,.12);display:flex;gap:5px;align-items:center;padding:0 10px}
+.mock .bar i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.4)}
+.mock .scr{position:absolute;inset:6% 0 0;display:flex;flex-direction:column;justify-content:center;padding:0 8%;color:#fff}
+.mock .scr b{font-family:var(--en);font-size:clamp(16px,2.6vw,40px);font-weight:800;line-height:1.1}
+.mock .scr em{font-style:normal;font-size:12px;opacity:.7;margin-top:8px}
+.mock1{left:4%;top:8%}.mock1 .scr{background:linear-gradient(160deg,#20304f,#5d7799 60%,#18233b)}
+.mock2{right:4%;bottom:8%}.mock2 .scr{background:linear-gradient(200deg,#0f2338,#e48c4a 70%,#2c1a12)}
+.quick{position:absolute;left:50px;right:50px;bottom:30px;display:flex;gap:26px;align-items:center;font-size:13px;color:#666}
+.quick b{color:var(--ink)}
+
+/* ===== Services (pinned) ===== */
+.svc{position:relative;height:100vh;overflow:hidden;color:#fff;background:var(--orange);transition:background-color .8s}
+.svc_rings{position:absolute;inset:0;pointer-events:none;opacity:.5}
+.svc_inner{position:relative;height:100%;display:grid;grid-template-columns:1fr 1fr;align-items:center;max-width:1400px;margin:0 auto;padding:0 60px}
+.svc_txt{position:relative;height:340px}
+.svc_item{position:absolute;inset:0;opacity:0;transform:translateY(40px);transition:opacity .6s,transform .6s}
+.svc_item.on{opacity:1;transform:none}
+.svc_item .num{display:inline-flex;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.18);align-items:center;justify-content:center;font-family:var(--en);font-size:12px;font-weight:600}
+.svc_item h2{font-size:clamp(34px,4.4vw,64px);font-weight:800;line-height:1.25;margin:26px 0 30px;letter-spacing:-.03em}
+.svc_item p{font-size:16px;line-height:1.8;opacity:.85;max-width:380px}
+.svc_vis{position:relative;height:70vh;perspective:1400px}
+.panel{position:absolute;top:50%;left:50%;width:min(420px,32vw);aspect-ratio:3/4;transform-style:preserve-3d;transform:translate(-50%,-50%) rotateY(-28deg)}
+.panel i{position:absolute;inset:0;border-radius:18px;background:linear-gradient(135deg,#3b47ff,#1520a8);box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.panel i:nth-child(1){transform:translateZ(-60px);opacity:.45}
+.panel i:nth-child(2){transform:translateZ(-30px);opacity:.7}
+.panel i:nth-child(3){display:flex;align-items:center;justify-content:center;transition:background .8s}
+.panel svg{width:62%;animation:spin 24s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.svc_dots{position:absolute;left:60px;bottom:50px;display:flex;gap:8px}
+.svc_dots i{width:26px;height:3px;background:rgba(255,255,255,.3);transition:.4s}
+.svc_dots i.on{background:#fff;width:50px}
+
+/* ===== Section title ===== */
+.stit{text-align:center;padding:140px 0 60px}
+.stit h2{font-family:var(--en);font-weight:600;font-size:clamp(48px,6vw,88px);letter-spacing:-.01em}
+.stit .arrow{display:inline-flex;gap:60px;margin-top:20px;font-family:var(--en);font-size:24px;color:#999}
+
+/* ===== Projects ===== */
+.projects{background:#fff;padding-bottom:120px;overflow:hidden}
+.pj_track{display:flex;gap:28px;padding:30px 0 60px;width:max-content;animation:slide 40s linear infinite;perspective:1200px}
+.projects:hover .pj_track{animation-play-state:paused}
+@keyframes slide{to{transform:translateX(-50%)}}
+.pj{width:300px;aspect-ratio:3/4;border-radius:14px;overflow:hidden;position:relative;flex:none;transition:transform .5s;box-shadow:0 18px 40px rgba(0,0,0,.12)}
+.pj:hover{transform:translateY(-14px) rotateY(-8deg)}
+.pj .cap{position:absolute;left:0;right:0;bottom:0;padding:22px;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.55))}
+.pj .cap b{display:block;font-family:var(--en);font-size:20px;font-weight:700}
+.pj .cap span{font-size:13px;opacity:.85}
+.more{display:flex;justify-content:center}
+.more a{display:inline-flex;align-items:center;gap:12px;font-family:var(--en);font-size:22px;padding:14px 26px;border-radius:40px;background:var(--gray);transition:.3s}
+.more a:hover{background:var(--ink);color:#fff}
+.more a::after{content:"+";font-weight:300;font-size:26px;color:#aaa}
+
+/* ===== Team ===== */
+.team{background:var(--navy);color:#fff;padding-bottom:140px}
+.team .stit .arrow{color:rgba(255,255,255,.5)}
+.team_list{display:grid;grid-template-columns:repeat(3,1fr);gap:36px}
+.tcard{aspect-ratio:4/3.4;perspective:1200px;cursor:pointer}
+.tcard_in{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.4,.1,.2,1)}
+.tcard:hover .tcard_in,.tcard.flip .tcard_in{transform:rotateY(180deg)}
+.tcard .f,.tcard .b{position:absolute;inset:0;border-radius:6px;backface-visibility:hidden;padding:24px;display:flex;flex-direction:column}
+.tcard .f h3{font-size:15px;font-weight:700}
+.tcard .f .role{margin-top:auto;text-align:right;font-family:monospace;font-size:13px;line-height:1.5;white-space:pre-line}
+.tcard .f .blob{position:absolute;left:12%;top:24%;width:44%;aspect-ratio:1;border-radius:46% 54% 58% 42%/50% 40% 60% 50%;animation:morph 8s ease-in-out infinite}
+@keyframes morph{50%{border-radius:60% 40% 35% 65%/45% 60% 40% 55%;transform:rotate(25deg)}}
+.tcard .b{transform:rotateY(180deg);background:#fff;color:var(--ink);justify-content:center}
+.tcard .b h3{font-size:20px;margin-bottom:16px}
+.tcard .b p{font-size:15px;line-height:1.8;color:#555}
+.t1 .f{background:var(--blue)}.t1 .blob{background:linear-gradient(135deg,#9bf0ff,#4a6cff)}
+.t2 .f{background:var(--pink)}.t2 .blob{background:linear-gradient(135deg,#ff3fa4,#ffd1f0)}
+.t3 .f{background:var(--lime);color:var(--ink)}.t3 .blob{background:linear-gradient(135deg,#ff8a00,#2a1b00)}
+
+/* ===== Notice (chat) ===== */
+.notice{background:var(--gray);padding:60px 0 100px}
+.notice_head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:40px}
+.notice_head h2{font-family:var(--en);font-weight:500;font-size:30px}
+.notice_head a{font-size:34px;font-weight:200}
+.chat{display:flex;gap:18px;max-width:760px}
+.avatar{flex:none;width:50px;height:50px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--en);font-weight:800;font-size:20px;color:var(--blue);box-shadow:0 4px 12px rgba(0,0,0,.06)}
+.bubbles{display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.bubble{background:#fff;padding:14px 22px;border-radius:4px 22px 22px 22px;font-size:15px;line-height:1.6;opacity:0;transform:translateY(16px);transition:.5s}
+.bubble.show{opacity:1;transform:none}
+.bubble a{color:var(--blue);font-weight:600}
+.typing{display:flex;gap:5px;padding:20px 26px}
+.typing i{width:7px;height:7px;border-radius:50%;background:#ccc;animation:dot 1.2s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes dot{30%{transform:translateY(-5px);background:#999}}
+
+/* ===== Contact ===== */
+.contact{padding:140px 0 60px}
+.contact_grid{display:grid;grid-template-columns:1fr 1.2fr;gap:80px}
+.contact h2{font-family:var(--en);font-weight:700;font-size:clamp(48px,5.5vw,80px);line-height:1}
+.contact h2 + h3{font-size:22px;margin:22px 0 26px}
+.contact .desc{font-size:15px;line-height:1.9;color:#555}
+.form .note{font-size:14px;color:#888;margin-bottom:22px}
+.form .note b{color:var(--orange)}
+.field{position:relative;border-bottom:1px solid var(--line);margin-bottom:12px}
+.field input,.field textarea{width:100%;border:0;outline:0;padding:18px 2px;font:inherit;font-size:15px;background:transparent;resize:none}
+.field::after{content:"";position:absolute;left:0;bottom:-1px;height:2px;width:0;background:var(--blue);transition:width .4s}
+.field:focus-within::after{width:100%}
+.agree{display:flex;align-items:center;gap:10px;margin:24px 0 36px;font-size:14px;color:#555}
+.agree input{width:18px;height:18px;accent-color:var(--blue)}
+.agree a{font-weight:700;color:var(--ink)}
+.submit{display:block;margin:0 auto;padding:18px 70px;background:var(--blue);color:#fff;border-radius:4px;font-weight:700;font-size:16px;transition:.3s}
+.submit:hover{background:var(--navy)}
+
+/* ===== Marquee ===== */
+.marquee{overflow:hidden;padding:60px 0;border-top:1px solid var(--line)}
+.marquee div{display:flex;width:max-content;animation:slide 26s linear infinite}
+.marquee span{font-family:var(--en);font-weight:400;font-size:clamp(70px,10vw,150px);color:#ececef;padding-right:80px;white-space:nowrap}
+
+/* ===== Footer ===== */
+.footer{position:relative;padding:50px 0 60px;font-size:13px;color:#555;border-top:1px solid var(--line);overflow:hidden}
+.footer_grid{display:grid;grid-template-columns:1.3fr 1fr;gap:40px}
+.footer li{line-height:2.1}
+.footer dl{display:grid;grid-template-columns:110px 1fr;row-gap:8px}
+.footer dt{color:#999}
+.footer .copy{margin-top:20px;font-size:11px;color:#999;letter-spacing:.03em}
+.touch{position:absolute;right:2%;bottom:-70px;width:200px;height:200px;cursor:pointer}
+.footer_grid{padding-right:200px}
+.touch .fur{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 40% 40%,#d6ff6a,#7bd122 55%,#3f8f12);filter:url(#fur);transition:transform .5s cubic-bezier(.3,1.6,.5,1)}
+.touch:hover .fur{transform:scale(1.08) rotate(-10deg)}
+.touch .ball{position:absolute;left:50%;top:45%;width:70px;height:70px;margin:-35px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffc06a,#ff7a1a);display:flex;align-items:center;justify-content:center;color:#fff;font-family:var(--en);font-size:12px;font-weight:600;transition:transform .5s cubic-bezier(.3,1.6,.5,1)}
+.touch:active .ball{transform:scale(.85)}
+
+/* ===== Floating ===== */
+.float{position:fixed;right:28px;bottom:28px;z-index:90;display:flex;flex-direction:column;gap:12px;align-items:center}
+.float a,.float button{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(0,0,0,.15)}
+.float .talk{background:var(--ink);color:#fff;font-family:var(--en);font-weight:800}
+.float .top{background:#fff;color:var(--ink);border:1.5px solid var(--lime);opacity:0;pointer-events:none;transition:.3s}
+.float .top.show{opacity:1;pointer-events:auto}
+
+/* ===== Reveal ===== */
+.rv{opacity:0;transform:translateY(50px);transition:opacity .9s,transform .9s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+
+/* ===== Mobile ===== */
+@media (max-width:900px){
+  .header{padding:0 20px;height:70px}.pill{display:none}
+  .inner{padding:0 16px}
+  .stage_box{inset:12% 16px 18%}.mock{width:72%}.quick{left:16px;right:16px;flex-wrap:wrap;gap:10px 18px}
+  .svc_inner{grid-template-columns:1fr;padding:90px 20px 0;align-content:start}
+  .svc_txt{height:300px}.svc_vis{height:38vh}.panel{width:52vw}.svc_dots{left:20px}
+  .team_list,.contact_grid,.footer_grid{grid-template-columns:1fr}
+  .contact_grid{gap:40px}
+  .pj{width:220px}
+  .touch{width:150px;height:150px;right:-20px}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <filter id="fur"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="18"/></filter>
+</svg>
+
+<header class="header" id="header">
+  <a href="#" class="logo">BRAND<span>.</span></a>
+  <div class="header_r">
+    <a href="#contact" class="pill">MICRO</a>
+    <button class="burger" id="burger" aria-label="메뉴 열기"><i></i><i></i></button>
+  </div>
+</header>
+
+<nav class="sitemap" aria-label="사이트맵">
+  <ul>
+    <li><a href="#projects">PORTFOLIO</a></li>
+    <li><a href="#team">ABOUT</a></li>
+    <li><a href="#contact">INQUIRY</a></li>
+    <li><a href="#notice">NOTICE</a></li>
+  </ul>
+  <div class="side">
+    <p>T. 00-0000-0000</p>
+    <p>E. hello@brand.co.kr</p>
+    <p>서울시 OO구 OO로 00</p>
+  </div>
+</nav>
+
+<main>
+  <!-- Hero -->
+  <div id="heroPin" style="height:300vh;position:relative">
+    <section class="hero" id="hero">
+      <div class="hero_media"><div class="scenes" id="scenes"></div></div>
+      <div class="hero_knock" id="knock"><h1 class="hero_word">HAODES<span id="kI">I</span>GN</h1></div>
+      <div class="hero_grad" id="grad" aria-hidden="true"><div class="hero_word"><span class="txt">HAODESIGN</span><small>since 20XX</small></div></div>
+      <span class="mouse" aria-hidden="true"></span>
+    </section>
+  </div>
+
+  <!-- Showcase -->
+  <section class="stage" id="stage">
+    <div class="stage_bg en" id="stageBg">BRAND COMMUNICATION · BRAND COMMUNICATION</div>
+    <div class="stage_box">
+      <div class="mock mock1" data-speed="-60"><div class="bar"><i></i><i></i><i></i></div><div class="scr"><b>Industrial<br>Platform</b><em>기업 홈페이지 리뉴얼</em></div></div>
+      <div class="mock mock2" data-speed="60"><div class="bar"><i></i><i></i><i></i></div><div class="scr"><b>Updates<br>2026</b><em>연간 프로모션 랜딩</em></div></div>
+    </div>
+    <div class="quick">
+      <span>hello@brand.co.kr</span>
+      <a href="#contact"><b>빠른상담</b></a>
+      <a href="#contact">견적문의</a>
+      <a href="#contact">건의하기</a>
+    </div>
+  </section>
+
+  <!-- Services: 스크롤 고정 3단 -->
+  <div id="svcWrap" style="height:300vh;position:relative">
+    <section class="svc" id="svc">
+      <svg class="svc_rings" viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true">
+        <ellipse cx="1300" cy="120" rx="760" ry="560" fill="none" stroke="#fff" stroke-width="1.5" stroke-dasharray="5 10"/>
+        <ellipse cx="300" cy="860" rx="760" ry="560" fill="none" stroke="#fff" stroke-width="1.5" stroke-dasharray="5 10"/>
+      </svg>
+      <div class="svc_inner">
+        <div class="svc_txt">
+          <div class="svc_item on"><span class="num">01</span><h2>모든 화면에 맞춘<br>반응형 웹사이트</h2><p>PC, 태블릿, 모바일 어디서 열어도 깨지지 않도록 설계부터 다르게 접근합니다. 사용자의 동선을 먼저 그리고 화면을 만듭니다.</p></div>
+          <div class="svc_item"><span class="num">02</span><h2>시선을 붙잡는<br>프로모션·이벤트 페이지</h2><p>캠페인 기간에 맞춘 랜딩, 인터랙티브 이벤트, 참여형 페이지까지 기획·디자인·개발을 한 팀에서 끝냅니다.</p></div>
+          <div class="svc_item"><span class="num">03</span><h2>오픈 이후까지<br>책임지는 운영</h2><p>전담 담당자가 수정 요청에 바로 응답합니다. 오픈 후 유지보수와 개선 제안까지 꾸준히 함께합니다.</p></div>
+        </div>
+        <div class="svc_vis">
+          <div class="panel" id="panel"><i></i><i></i><i id="panelFace">
+            <svg viewBox="0 0 200 200" fill="none" stroke="rgba(255,255,255,.75)" stroke-width="1"><g id="rings"></g></svg>
+          </i></div>
+        </div>
+      </div>
+      <div class="svc_dots"><i class="on"></i><i></i><i></i></div>
+    </section>
+  </div>
+
+  <!-- Projects -->
+  <section class="projects" id="projects">
+    <div class="stit rv"><h2>PROJECTS</h2><div class="arrow"><span>(</span><span>↓</span><span>)</span></div></div>
+    <div class="pj_track" id="pjTrack"></div>
+    <div class="more"><a href="#projects">More view</a></div>
+  </section>
+
+  <!-- Team -->
+  <section class="team" id="team">
+    <div class="stit rv"><h2>OUR TEAM</h2><div class="arrow"><span>(</span><span>↓</span><span>)</span></div></div>
+    <div class="inner team_list">
+      <div class="tcard t1 rv"><div class="tcard_in">
+        <div class="f"><h3>기획 · 디자인팀</h3><span class="blob"></span><p class="role">PLANNING
+UI/UX DESIGN</p></div>
+        <div class="b"><h3>기획 · 디자인팀</h3><p>프로젝트의 출발점입니다. 의뢰인과 사용자 모두가 만족할 구조를 함께 고민하고 화면으로 옮깁니다.</p></div>
+      </div></div>
+      <div class="tcard t2 rv"><div class="tcard_in">
+        <div class="f"><h3>개발 · 인터랙션팀</h3><span class="blob"></span><p class="role">FRONT-END
+BACK-END</p></div>
+        <div class="b"><h3>개발 · 인터랙션팀</h3><p>정지된 시안에 움직임과 기능을 더합니다. 빠르고 안정적으로 동작하는 사이트를 만드는 것이 목표입니다.</p></div>
+      </div></div>
+      <div class="tcard t3 rv"><div class="tcard_in">
+        <div class="f"><h3>QA · 운영팀</h3><span class="blob"></span><p class="role">QUALITY
+OPERATIONS</p></div>
+        <div class="b"><h3>QA · 운영팀</h3><p>오픈 전 마지막 검수를 맡고, 오픈 후에도 문제없이 운영되도록 꾸준히 점검하고 소통합니다.</p></div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- Notice -->
+  <section class="notice" id="notice">
+    <div class="inner">
+      <div class="notice_head"><h2>Notice</h2><a href="#notice" aria-label="공지 더보기">+</a></div>
+      <div class="chat">
+        <div class="avatar">B</div>
+        <div class="bubbles" id="bubbles">
+          <div class="bubble">안녕하세요 👋</div>
+          <div class="bubble">방문해 주셔서 감사합니다.</div>
+          <div class="bubble">최근 공지를 확인해 보세요 → <a href="#notice">10월 휴무 안내</a></div>
+          <div class="bubble typing"><i></i><i></i><i></i></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="contact" id="contact">
+    <div class="inner contact_grid">
+      <div class="rv">
+        <h2>CONTACT<br>US</h2>
+        <h3>간편 문의하기</h3>
+        <p class="desc">고객과 오래 가는 관계를 가장 중요하게 생각합니다.<br>궁금한 점을 남겨주시면 확인 후 빠르게 연락드리겠습니다.</p>
+      </div>
+      <form class="form rv" onsubmit="event.preventDefault();alert('데모 페이지입니다. 실제 전송 기능은 연결되지 않았습니다.')">
+        <p class="note"><b>*</b> 모든 항목은 필수입니다.</p>
+        <div class="field"><input required maxlength="50" placeholder="이름 / 50자 이내"></div>
+        <div class="field"><input required type="email" maxlength="50" placeholder="이메일 / 50자 이내"></div>
+        <div class="field"><textarea required rows="3" maxlength="200" placeholder="문의 내용 / 200자 이내"></textarea></div>
+        <div class="field"><input required type="tel" placeholder="휴대폰 번호"></div>
+        <label class="agree"><input type="checkbox" required> 개인정보처리방침에 동의합니다. <a href="#">[전문보기]</a></label>
+        <button class="submit" type="submit">문의하기</button>
+      </form>
+    </div>
+  </section>
+
+  <div class="marquee" aria-hidden="true"><div><span>WOULD YOU LIKE TO JOIN US?</span><span>WOULD YOU LIKE TO JOIN US?</span><span>WOULD YOU LIKE TO JOIN US?</span><span>WOULD YOU LIKE TO JOIN US?</span></div></div>
+</main>
+
+<footer class="footer">
+  <div class="inner footer_grid">
+    <div>
+      <ul>
+        <li>T. 00-0000-0000</li>
+        <li>E. hello@brand.co.kr</li>
+        <li>[본사] 서울시 OO구 OO로 00, 0층</li>
+      </ul>
+      <p class="copy">COPYRIGHT © BRAND COMMUNICATION. ALL RIGHTS RESERVED.</p>
+    </div>
+    <dl>
+      <dt>대표</dt><dd>홍길동</dd>
+      <dt>사업자등록번호</dt><dd>000-00-00000</dd>
+      <dt>통신판매업신고</dt><dd>제 0000-OOOO-0000 호</dd>
+    </dl>
+  </div>
+  <div class="touch" id="touch" aria-hidden="true"><span class="fur"></span><span class="ball">Touch me</span></div>
+</footer>
+
+<div class="float">
+  <a href="#contact" class="talk" aria-label="빠른 상담">B</a>
+  <button class="top" id="toTop" aria-label="맨 위로">↑</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+// 메뉴
+const burger = document.getElementById('burger');
+burger.onclick = () => document.body.classList.toggle('menu-open');
+document.querySelectorAll('.sitemap a').forEach(a => a.onclick = () => document.body.classList.remove('menu-open'));
+
+// 헤더·탑버튼
+const header = document.getElementById('header'), toTop = document.getElementById('toTop');
+addEventListener('scroll', () => {
+  header.classList.toggle('scrolled', scrollY > 60);
+  toTop.classList.toggle('show', scrollY > 600);
+});
+toTop.onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
+
+// 히어로 글자 등장
+gsap.from('.hero_word', { y: 50, opacity: 0, duration: 1.4, ease: 'expo.out', delay: .2 });
+// 글자 안 장면: haod.co.kr 포트폴리오 중 제조·산업 23장(assets/industry/_list.tsv), 원본 색 유지
+(() => {
+  const C = Array.from({ length: 23 }, (_, i) => `assets/industry/i${String(i + 1).padStart(2, '0')}.jpg`);
+  const card = (s, st = '', cls = '') => `<div class="card ${cls}" style="${st}"><img src="${s}" alt=""></div>`;
+  // 사진마다 히어로 전체에서 최대 2번: 그리드 25(23장 + i01·i02 한 번 더) + 2×2 4 + 카드 줄 7 + 흩어진 카드 5 = 41
+  // ① 5열 × 5장, 같은 사진이 이웃하지 않게 순서대로 채움(i01·i02 두 번째는 마지막 열 아래쪽)
+  const grid = [...C, C[0], C[1]];
+  const cols = Array.from({ length: 5 }, (_, c) => `<div class="tcol">${grid.slice(c * 5, c * 5 + 5).map(s => card(s)).join('')}</div>`).join('');
+  const scatter = [[29, 24, 42, 52, 17], [-3, -6, 26, 22, 4], [64, -6, 20, 40, 7], [-4, 50, 24, 30, 10], [72, 66, 26, 32, 12]]
+    .map(([l, t, w, h, n], i) => card(C[n], `left:${l}%;top:${t}%;width:${w}%;height:${h}%;z-index:${i ? 1 : 2}`, 'sct')).join('');
+  const pills = ['#ffb199', '#ff6a3d', '#ffffff', '#1a1a1a'].map(c => `<i class="hpill" style="background:${c}"></i>`).join('');
+  const circs = [[-14, -35, 60], [30, -20, 55], [72, -30, 50]].map(([l, t, w]) => `<i class="circ" style="left:${l}%;top:${t}%;width:${w}vw;height:${w}vw"></i>`).join('')
+    + '<i class="circ k" style="left:58%;top:62%;width:16vw;height:16vw"></i>';
+  const rowList = [C[3], C[8], C[13], C[16], C[5], C[9], C[14]];  // 3번째(c14)가 가운데 카드와 같은 장
+  document.getElementById('scenes').innerHTML = `
+    <div class="sc" id="sc1"><div class="tilt" id="tilt">${cols}</div></div>
+    <div class="sc" id="sc4" style="background:#e83817"><div class="g4" id="g4">${[C[2], C[6], C[11], C[15]].map(s => card(s)).join('')}</div>${pills}</div>
+    <div class="sc" id="sc5" style="background:#fff">${circs}${card(C[13], '', 'mid')}<div class="row" id="row">${rowList.map(s => card(s)).join('')}</div></div>
+    <div class="sc" id="scV" style="background:#1a1a1a"><video src="assets/hao-video.mp4" muted autoplay loop playsinline style="width:100%;height:100%;object-fit:cover"></video></div>
+    <div class="sc" id="sc6" style="background:#f2f2f2">${scatter}</div>
+    <div class="sc logo_end" id="sc7"><b>HAO<span>DESIGN</span></b></div>`;
+
+  gsap.set('.sc', { autoAlpha: 0 });
+  gsap.set('#tilt', { xPercent: -50, yPercent: -50 });
+  gsap.set('#g4', { xPercent: -50, yPercent: -50 });
+  gsap.set('#sc4 .hpill', { rotation: 35 });
+  // 전체 0.9배속 (약 14초 → 약 15.4초 반복, 예손 원본 15.5초와 비슷)
+  const tl = gsap.timeline({ repeat: -1 }).timeScale(.9);
+  const cut = (from, to, at) => tl.set(to, { autoAlpha: 1 }, at).set(from, { autoAlpha: 0 }, at);
+
+  // 0~3.8s ① 예손처럼: 처음엔 가운데 한 열만 위로 흐름 → 0.8초부터 나머지 열이 위·아래에서 엇갈려 들어오며
+  //           화면이 물러나 5열 그리드가 됨(열마다 위·아래 반대로 흐름) → 끝에 간격이 벌어지며 배경이 웜그레이로
+  const cols1 = gsap.utils.toArray('#sc1 .tcol');
+  const others = cols1.filter((c, i) => i !== 2);
+  tl.set('#sc1', { autoAlpha: 1 }, 0)
+    .fromTo('#tilt', { rotation: -8, scale: 1.45 }, { rotation: -12, duration: .8, ease: 'none' }, 0)
+    .to('#tilt', { rotation: -13, scale: 1, duration: 1.4, ease: 'power2.inOut' }, .8)
+    .fromTo(cols1, { yPercent: (i) => (i % 2 ? 6 : -6) }, { yPercent: (i) => (i % 2 ? -6 : 6), duration: 3.8, ease: 'none' }, 0)
+    .fromTo(others, { autoAlpha: 0, y: (i) => (i % 2 ? -1 : 1) * innerHeight * .9 }, { autoAlpha: 1, y: 0, duration: 1, stagger: .08, ease: 'power3.out' }, .8)
+    .fromTo('#tilt, #sc1 .tcol', { gap: () => innerWidth * .012 }, { gap: () => innerWidth * .05, duration: 1, ease: 'power2.inOut' }, 2.7)
+    .to('#tilt', { scale: .9, duration: 1, ease: 'power2.inOut' }, 2.7)
+    .fromTo('#sc1', { backgroundColor: '#ffffff' }, { backgroundColor: '#8a7f74', duration: .5 }, 2.7);
+
+  // 3.8s ④ 붙어 있던 2×2가 벌어지고 → 알약 띠가 왼쪽 아래에서 오른쪽 위로 차례로 쓸고 지나감
+  cut('#sc1', '#sc4', 3.8);
+  tl.fromTo('#g4', { gap: 0, scale: 1.08 }, { gap: () => innerWidth * .025, scale: 1, duration: .5, ease: 'power2.out' }, 3.85)
+    .fromTo('#sc4 .hpill', { x: '-95vw', y: '95vh' }, { x: '95vw', y: '-95vh', duration: 1.1, stagger: .09, ease: 'power2.inOut' }, 4.25);
+
+  // 5s ⑤ 띠 뒤로 원형 패턴 장면이 대각선 와이프로 열림 → 가운데 카드 → 양옆 카드가 붙으며 줄이 되어 왼쪽으로 흐름
+  tl.set('#sc5', { autoAlpha: 1 }, 5)
+    .fromTo('#sc5', { clipPath: 'polygon(0% 100%, 0% 100%, 0% 100%)' }, { clipPath: 'polygon(0% 100%, 260% 100%, 0% -160%)', duration: .5, ease: 'power2.in' }, 5)
+    .set('#sc4', { autoAlpha: 0 }, 5.5)
+    .fromTo('#sc5 .circ', { scale: .5 }, { scale: 1, duration: 1, stagger: .05, ease: 'expo.out' }, 5)
+    .set('#row', { autoAlpha: 0 }, 5)
+    .fromTo('#sc5 .mid', { scale: .4, autoAlpha: 0 }, { scale: 1.3, autoAlpha: 1, duration: .7, ease: 'power3.out' }, 5.45)
+    .to('#sc5 .mid', { scale: 1, duration: .45, ease: 'power2.inOut' }, 5.95)
+    .set('#sc5 .mid', { autoAlpha: 0 }, 6.4).set('#row', { autoAlpha: 1 }, 6.4)
+    .fromTo('#row', { x: 0 }, { x: () => -innerWidth * .52, duration: 1.9, ease: 'none' }, 6.4)
+    .to('#sc5 .circ', { rotation: 8, scale: 1.08, duration: 2.4, ease: 'none' }, 5.9);
+
+  // 8.3s ⑥ 예손의 기기 목업 자리에 하오디자인 메인 영상
+  cut('#sc5', '#scV', 8.3);
+  tl.fromTo('#scV video', { scale: 1.15 }, { scale: 1, duration: 1.6, ease: 'power2.out' }, 8.3);
+
+  // 9.9s ⑦ 흩어진 카드가 바깥에서 모여들고 천천히 떠다님
+  cut('#scV', '#sc6', 9.9);
+  tl.fromTo('#sc6 .sct', { autoAlpha: 0, scale: .7, x: (i, el) => (parseFloat(el.style.left) + parseFloat(el.style.width) / 2 - 50) * 8, y: (i, el) => (parseFloat(el.style.top) + parseFloat(el.style.height) / 2 - 50) * 8 },
+    { autoAlpha: 1, scale: 1, x: 0, y: 0, duration: 1.2, stagger: .05, ease: 'expo.out' }, 9.9)
+    .to('#sc6 .sct', { y: '-=18', duration: 1.6, stagger: .03, ease: 'sine.inOut' }, 11.1);
+
+  // 12.5s ⑧ 로고로 마무리 후 처음부터 반복
+  cut('#sc6', '#sc7', 12.5);
+  tl.fromTo('#sc7 b', { scale: .9, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: .5, ease: 'power2.out' }, 12.5)
+    .to({}, { duration: .9 }, 13);
+})();
+// 스크롤: 그라데이션 색이 빠짐 → 'I' 획을 중심으로 글자 확대 → 영상이 화면 가득
+const heroOrigin = () => {
+  // offset 값은 transform(등장 애니메이션·확대)의 영향을 받지 않아 확대 중에도 중심이 'I' 획 가운데에 고정됨
+  const i = document.getElementById('kI'), w = i.offsetParent;
+  return `${w.offsetLeft + i.offsetLeft + i.offsetWidth / 2}px ${w.offsetTop + i.offsetTop + i.offsetHeight * .6}px`;
+};
+const heroTl = gsap.timeline({
+  scrollTrigger: { trigger: '#heroPin', start: 'top top', end: 'bottom bottom', pin: '#hero', pinSpacing: false, scrub: 1, invalidateOnRefresh: true },
+});
+heroTl
+  // 그라데이션 글자 단계에서는 뒤 장면을 숨겨 흰 바탕에 아무것도 비치지 않게
+  .fromTo('.hero_media', { autoAlpha: 0 }, { autoAlpha: 1, duration: .02 }, .01)
+  .to('#grad .txt, #grad small, .mouse', { opacity: 0, duration: .25 }, 0)
+  .to('#knock, #grad', { scale: 90, transformOrigin: heroOrigin, duration: .6, ease: 'power3.in' }, '+=.05')
+  .to({}, { duration: .1 });
+
+// 쇼케이스: 배경 글자 흐름 + 목업 패럴랙스
+gsap.fromTo('#stageBg', { x: '10%' }, { x: '-40%', scrollTrigger: { trigger: '#stage', start: 'top bottom', end: 'bottom top', scrub: true } });
+document.querySelectorAll('.mock').forEach(m => gsap.fromTo(m, { y: -m.dataset.speed }, { y: +m.dataset.speed, scrollTrigger: { trigger: '#stage', start: 'top bottom', end: 'bottom top', scrub: true } }));
+
+// 서비스 링 패턴
+const g = document.getElementById('rings');
+for (let i = 0; i < 18; i++) g.innerHTML += `<ellipse cx="100" cy="100" rx="80" ry="${20 + i * 2}" transform="rotate(${i * 10} 100 100)"/>`;
+
+// 서비스 고정 3단: 배경색·텍스트 전환
+const svcColors = ['#ff6f3c', '#081427', '#0b2f9f'];
+const faceColors = ['linear-gradient(135deg,#3b47ff,#1520a8)', 'linear-gradient(135deg,#3b47ff,#1520a8)', 'linear-gradient(135deg,#c87bff,#6b3bff)'];
+const items = document.querySelectorAll('.svc_item'), dots = document.querySelectorAll('.svc_dots i');
+let cur = -1;
+function setSvc(i) {
+  if (i === cur) return; cur = i;
+  items.forEach((el, k) => el.classList.toggle('on', k === i));
+  dots.forEach((el, k) => el.classList.toggle('on', k === i));
+  document.getElementById('svc').style.backgroundColor = svcColors[i];
+  document.getElementById('panelFace').style.background = faceColors[i];
+  document.getElementById('header').classList.toggle('on-dark', true);
+}
+ScrollTrigger.create({
+  trigger: '#svcWrap', start: 'top top', end: 'bottom bottom', pin: '#svc', pinSpacing: false,
+  onUpdate: s => setSvc(Math.min(2, Math.floor(s.progress * 3))),
+  onToggle: s => header.classList.toggle('on-dark', s.isActive)
+});
+setSvc(0); header.classList.remove('on-dark');
+gsap.to('#panel', { rotateY: 20, scrollTrigger: { trigger: '#svcWrap', start: 'top top', end: 'bottom bottom', scrub: true } });
+
+// 프로젝트 카드 (무한 슬라이드, 2배 복제)
+const projects = [
+  ['Mobility', '자동차 브랜드 사이트', '#1d2a3a,#6d8aa8'],
+  ['Fashion', '패션 커머스 리뉴얼', '#e8d5c4,#8a6a55'],
+  ['G.Green', '친환경 캠페인', '#3fb54a,#1f6e2a'],
+  ['Night Run', '스포츠 이벤트', '#0a0f2c,#3a3cff'],
+  ['Clinic', '병원 홈페이지', '#a9d8ff,#4b7bd6'],
+  ['Foodie', 'F&B 프로모션', '#ffb347,#ff5e3a'],
+  ['Finance', '금융 플랫폼', '#151515,#5a5a5a'],
+];
+document.getElementById('pjTrack').innerHTML = [...projects, ...projects].map(([t, d, c]) =>
+  `<a class="pj" href="#projects" style="background:linear-gradient(160deg,${c})"><div class="cap"><b>${t}</b><span>${d}</span></div></a>`).join('');
+
+// 스크롤 등장
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .2 });
+document.querySelectorAll('.rv').forEach(el => io.observe(el));
+
+// 공지 말풍선 순차 등장
+ScrollTrigger.create({ trigger: '#notice', start: 'top 70%', once: true, onEnter: () =>
+  document.querySelectorAll('.bubble').forEach((b, i) => setTimeout(() => b.classList.add('show'), i * 450)) });
+
+// 모바일: 팀 카드 탭으로 뒤집기
+document.querySelectorAll('.tcard').forEach(c => c.onclick = () => c.classList.toggle('flip'));
+
+// Touch me
+document.getElementById('touch').onclick = e => gsap.fromTo(e.currentTarget.querySelector('.fur'), { rotate: -30 }, { rotate: 0, duration: 1.2, ease: 'elastic.out(1,.3)' });
+</script>
+</body>
+</html>

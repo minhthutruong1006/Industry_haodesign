@@ -77,10 +77,10 @@ body.menu-open .sitemap ul a{transform:none}
 .hpill{position:absolute;left:30vw;top:-40vh;width:24vw;height:180vh;border-radius:12vw}
 .circ{position:absolute;border-radius:50%;background:#e83817}
 .circ.k{background:#1a1a1a}
-.row{position:absolute;top:50%;left:-13.2vw;display:flex;gap:1.6vw;margin-top:-8vw}
-.row .card,.mid{width:24vw;aspect-ratio:3/2;border-radius:10px}
+.row{position:absolute;top:50%;left:-61vw;display:flex;gap:3vw;margin-top:-10.5vw}
+.row .card,.mid{width:42vw;aspect-ratio:2/1;border-radius:0;box-shadow:none}
 .row .card{position:relative;flex:none}
-.mid{left:38vw;top:50%;margin-top:-8vw}
+.mid{left:29vw;top:50%;margin-top:-10.5vw}
 .logo_end{display:flex;align-items:center;justify-content:center;background:#f2f2f2}
 .logo_end b{font-family:var(--en);font-weight:800;font-size:7vw;letter-spacing:-.02em;color:#e83817}
 .logo_end b span{color:#222}
@@ -487,10 +487,9 @@ gsap.from('.hero_word', { y: 50, opacity: 0, duration: 1.4, ease: 'expo.out', de
     .set('#sc4', { autoAlpha: 0 }, 5.5)
     .fromTo('#sc5 .circ', { scale: .5 }, { scale: 1, duration: 1, stagger: .05, ease: 'expo.out' }, 5)
     .set('#row', { autoAlpha: 0 }, 5)
-    .fromTo('#sc5 .mid', { scale: .4, autoAlpha: 0 }, { scale: 1.3, autoAlpha: 1, duration: .7, ease: 'power3.out' }, 5.45)
-    .to('#sc5 .mid', { scale: 1, duration: .45, ease: 'power2.inOut' }, 5.95)
-    .set('#sc5 .mid', { autoAlpha: 0 }, 6.4).set('#row', { autoAlpha: 1 }, 6.4)
-    .fromTo('#row', { x: 0 }, { x: () => -innerWidth * .52, duration: 1.9, ease: 'none' }, 6.4)
+    .fromTo('#sc5 .mid', { scale: .55, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: .8, ease: 'power3.out' }, 5.45)
+    .set('#sc5 .mid', { autoAlpha: 0 }, 6.3).set('#row', { autoAlpha: 1 }, 6.3)
+    .fromTo('#row', { x: 0 }, { x: () => -innerWidth * .45, duration: 2.2, ease: 'none' }, 6.3)
     .to('#sc5 .circ', { rotation: 8, scale: 1.08, duration: 2.4, ease: 'none' }, 5.9);
 
   // 8.3s ⑥ 예손의 기기 목업 자리에 하오디자인 메인 영상
@@ -522,6 +521,8 @@ heroTl
   .fromTo('.hero_media', { autoAlpha: 0 }, { autoAlpha: 1, duration: .02 }, .01)
   .to('#grad .txt, #grad small, .mouse', { opacity: 0, duration: .25 }, 0)
   .to('#knock, #grad', { scale: 90, transformOrigin: heroOrigin, duration: .6, ease: 'power3.in' }, '+=.05')
+  // 90배 확대된 글자 레이어가 장면 위에 옅은 흰 막처럼 남아 색이 바래 보여서, 확대 끝 무렵 숨김
+  .to('#knock', { autoAlpha: 0, duration: .04 }, '-=.06')
   .to({}, { duration: .1 });
 
 // 쇼케이스: 배경 글자 흐름 + 목업 패럴랙스
