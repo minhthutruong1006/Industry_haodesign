@@ -77,10 +77,10 @@ body.menu-open .sitemap ul a{transform:none}
 .hpill{position:absolute;left:30vw;top:-40vh;width:24vw;height:180vh;border-radius:12vw}
 .circ{position:absolute;border-radius:50%;background:#e83817}
 .circ.k{background:#1a1a1a}
-.row{position:absolute;top:50%;left:-61vw;display:flex;gap:3vw;margin-top:-10.5vw}
-.row .card,.mid{width:42vw;aspect-ratio:2/1;border-radius:0;box-shadow:none}
+.row{position:absolute;top:50%;left:-54vw;display:flex;gap:2vw;margin-top:-13.33vw}
+.row .card,.mid{width:40vw;aspect-ratio:3/2;border-radius:0;box-shadow:none}
 .row .card{position:relative;flex:none}
-.mid{left:29vw;top:50%;margin-top:-10.5vw}
+.mid{left:30vw;top:50%;margin-top:-13.33vw}
 .logo_end{display:flex;align-items:center;justify-content:center;background:#f2f2f2}
 .logo_end b{font-family:var(--en);font-weight:800;font-size:7vw;letter-spacing:-.02em;color:#e83817}
 .logo_end b span{color:#222}
@@ -487,9 +487,14 @@ gsap.from('.hero_word', { y: 50, opacity: 0, duration: 1.4, ease: 'expo.out', de
     .set('#sc4', { autoAlpha: 0 }, 5.5)
     .fromTo('#sc5 .circ', { scale: .5 }, { scale: 1, duration: 1, stagger: .05, ease: 'expo.out' }, 5)
     .set('#row', { autoAlpha: 0 }, 5)
-    .fromTo('#sc5 .mid', { scale: .55, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: .8, ease: 'power3.out' }, 5.45)
-    .set('#sc5 .mid', { autoAlpha: 0 }, 6.3).set('#row', { autoAlpha: 1 }, 6.3)
-    .fromTo('#row', { x: 0 }, { x: () => -innerWidth * .45, duration: 2.2, ease: 'none' }, 6.3)
+    // 예손 영상(7.75~10s) 그대로: 카드 하나가 살짝 위에서 내려앉으며 나타남 → 양옆 카드가 딱 붙은 채 생겼다가 간격이 벌어짐
+    // → 천천히 흐르다 한 장(42vw)만큼 빠르게 넘어가고 → 다시 천천히 흐름
+    .fromTo('#sc5 .mid', { autoAlpha: 0, y: () => -innerHeight * .05 }, { autoAlpha: 1, y: 0, duration: .5, ease: 'power2.out' }, 5.6)
+    .set('#sc5 .mid', { autoAlpha: 0 }, 6.2).set('#row', { autoAlpha: 1 }, 6.2)
+    .fromTo('#row .card', { x: (i) => -(i - 2) * innerWidth * .02 }, { x: 0, duration: .3, ease: 'power2.out' }, 6.2)
+    .fromTo('#row', { x: 0 }, { x: () => -innerWidth * .02, duration: .4, ease: 'none' }, 6.2)
+    .to('#row', { x: () => -innerWidth * .44, duration: .35, ease: 'power2.inOut' }, 6.6)
+    .to('#row', { x: () => -innerWidth * .48, duration: 1.35, ease: 'none' }, 6.95)
     .to('#sc5 .circ', { rotation: 8, scale: 1.08, duration: 2.4, ease: 'none' }, 5.9);
 
   // 8.3s ⑥ 예손의 기기 목업 자리에 하오디자인 메인 영상
