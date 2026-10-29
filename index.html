@@ -433,9 +433,9 @@ toTop.onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
 
 // 히어로 글자 등장
 gsap.from('.hero_word', { y: 50, opacity: 0, duration: 1.4, ease: 'expo.out', delay: .2 });
-// 글자 안 장면: design.haoc.co.kr 카탈로그 사진, 원본 색 유지
+// 글자 안 장면: haod.co.kr 포트폴리오 중 제조·산업 18장(assets/industry/_list.tsv), 원본 색 유지
 (() => {
-  const C = Array.from({ length: 18 }, (_, i) => `assets/haoc/c${String(i + 1).padStart(2, '0')}.jpg`);
+  const C = Array.from({ length: 18 }, (_, i) => `assets/industry/i${String(i + 1).padStart(2, '0')}.jpg`);
   const card = (s, st = '', cls = '') => `<div class="card ${cls}" style="${st}"><img src="${s}" alt=""></div>`;
   // 사진마다 히어로 전체에서 최대 2번: 그리드 20(18장 + c01·c02 한 번 더) + 2×2 4 + 카드 줄 7 + 흩어진 카드 5 = 36
   // ① 4열 × 5장, 같은 사진이 이웃하지 않게 순서대로 채움(c01·c02 두 번째는 마지막 열 아래쪽)
