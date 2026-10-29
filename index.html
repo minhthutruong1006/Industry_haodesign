@@ -68,8 +68,8 @@ body.menu-open .sitemap ul a{transform:none}
 .card{position:absolute;border-radius:12px;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.16);background:#ddd}
 .card img,.card video{display:block;width:100%;height:100%;object-fit:cover}
 /* 열 폭 고정: 간격이 벌어질 때 카드가 작아지지 않음 */
-.tilt{position:absolute;left:50%;top:50%;display:flex;gap:1.4vw}
-.tcol{width:27vw;display:flex;flex-direction:column;gap:1.3vw}
+.tilt{position:absolute;left:50%;top:50%;display:flex;gap:1.2vw}
+.tcol{width:22vw;display:flex;flex-direction:column;gap:1.2vw}
 .tcol .card img{backface-visibility:hidden}
 .tcol .card{position:relative;flex:none;aspect-ratio:16/10;border-radius:4px;box-shadow:0 6px 16px rgba(0,0,0,.1)}
 .g4{position:absolute;left:50%;top:50%;width:62vw;display:grid;grid-template-columns:1fr 1fr}
@@ -433,14 +433,14 @@ toTop.onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
 
 // 히어로 글자 등장
 gsap.from('.hero_word', { y: 50, opacity: 0, duration: 1.4, ease: 'expo.out', delay: .2 });
-// 글자 안 장면: haod.co.kr 포트폴리오 중 제조·산업 18장(assets/industry/_list.tsv), 원본 색 유지
+// 글자 안 장면: haod.co.kr 포트폴리오 중 제조·산업 23장(assets/industry/_list.tsv), 원본 색 유지
 (() => {
-  const C = Array.from({ length: 18 }, (_, i) => `assets/industry/i${String(i + 1).padStart(2, '0')}.jpg`);
+  const C = Array.from({ length: 23 }, (_, i) => `assets/industry/i${String(i + 1).padStart(2, '0')}.jpg`);
   const card = (s, st = '', cls = '') => `<div class="card ${cls}" style="${st}"><img src="${s}" alt=""></div>`;
-  // 사진마다 히어로 전체에서 최대 2번: 그리드 20(18장 + c01·c02 한 번 더) + 2×2 4 + 카드 줄 7 + 흩어진 카드 5 = 36
-  // ① 4열 × 5장, 같은 사진이 이웃하지 않게 순서대로 채움(c01·c02 두 번째는 마지막 열 아래쪽)
+  // 사진마다 히어로 전체에서 최대 2번: 그리드 25(23장 + i01·i02 한 번 더) + 2×2 4 + 카드 줄 7 + 흩어진 카드 5 = 41
+  // ① 5열 × 5장, 같은 사진이 이웃하지 않게 순서대로 채움(i01·i02 두 번째는 마지막 열 아래쪽)
   const grid = [...C, C[0], C[1]];
-  const cols = Array.from({ length: 4 }, (_, c) => `<div class="tcol">${grid.slice(c * 5, c * 5 + 5).map(s => card(s)).join('')}</div>`).join('');
+  const cols = Array.from({ length: 5 }, (_, c) => `<div class="tcol">${grid.slice(c * 5, c * 5 + 5).map(s => card(s)).join('')}</div>`).join('');
   const scatter = [[29, 24, 42, 52, 17], [-3, -6, 26, 22, 4], [64, -6, 20, 40, 7], [-4, 50, 24, 30, 10], [72, 66, 26, 32, 12]]
     .map(([l, t, w, h, n], i) => card(C[n], `left:${l}%;top:${t}%;width:${w}%;height:${h}%;z-index:${i ? 1 : 2}`, 'sct')).join('');
   const pills = ['#ffb199', '#ff6a3d', '#ffffff', '#1a1a1a'].map(c => `<i class="hpill" style="background:${c}"></i>`).join('');
@@ -459,20 +459,20 @@ gsap.from('.hero_word', { y: 50, opacity: 0, duration: 1.4, ease: 'expo.out', de
   gsap.set('#tilt', { xPercent: -50, yPercent: -50 });
   gsap.set('#g4', { xPercent: -50, yPercent: -50 });
   gsap.set('#sc4 .hpill', { rotation: 35 });
-  // 전체 0.8배속 (약 14초 → 약 17.4초 반복)
-  const tl = gsap.timeline({ repeat: -1 }).timeScale(.8);
+  // 전체 0.9배속 (약 14초 → 약 15.4초 반복, 예손 원본 15.5초와 비슷)
+  const tl = gsap.timeline({ repeat: -1 }).timeScale(.9);
   const cut = (from, to, at) => tl.set(to, { autoAlpha: 1 }, at).set(from, { autoAlpha: 0 }, at);
 
-  // 0~3.8s ① 예손처럼: 처음엔 한 열(2번째 열)만 화면 가운데서 위로 흐름 → 0.8초부터 나머지 열이 위·아래에서 엇갈려 들어오며
-  //           화면이 물러나 4열 그리드가 됨(열마다 위·아래 반대로 흐름) → 끝에 간격이 벌어지며 배경이 웜그레이로
+  // 0~3.8s ① 예손처럼: 처음엔 가운데 한 열만 위로 흐름 → 0.8초부터 나머지 열이 위·아래에서 엇갈려 들어오며
+  //           화면이 물러나 5열 그리드가 됨(열마다 위·아래 반대로 흐름) → 끝에 간격이 벌어지며 배경이 웜그레이로
   const cols1 = gsap.utils.toArray('#sc1 .tcol');
-  const others = cols1.filter((c, i) => i !== 1);
+  const others = cols1.filter((c, i) => i !== 2);
   tl.set('#sc1', { autoAlpha: 1 }, 0)
-    .fromTo('#tilt', { rotation: 8, scale: 1.3, x: () => innerWidth * .142 }, { rotation: 12, scale: 1.3, x: () => innerWidth * .142, duration: .8, ease: 'none' }, 0)
-    .to('#tilt', { rotation: 13, scale: 1, x: 0, duration: 1.4, ease: 'power2.inOut' }, .8)
+    .fromTo('#tilt', { rotation: -8, scale: 1.45 }, { rotation: -12, duration: .8, ease: 'none' }, 0)
+    .to('#tilt', { rotation: -13, scale: 1, duration: 1.4, ease: 'power2.inOut' }, .8)
     .fromTo(cols1, { yPercent: (i) => (i % 2 ? 6 : -6) }, { yPercent: (i) => (i % 2 ? -6 : 6), duration: 3.8, ease: 'none' }, 0)
     .fromTo(others, { autoAlpha: 0, y: (i) => (i % 2 ? -1 : 1) * innerHeight * .9 }, { autoAlpha: 1, y: 0, duration: 1, stagger: .08, ease: 'power3.out' }, .8)
-    .fromTo('#tilt, #sc1 .tcol', { gap: () => innerWidth * .013 }, { gap: () => innerWidth * .06, duration: 1, ease: 'power2.inOut' }, 2.7)
+    .fromTo('#tilt, #sc1 .tcol', { gap: () => innerWidth * .012 }, { gap: () => innerWidth * .05, duration: 1, ease: 'power2.inOut' }, 2.7)
     .to('#tilt', { scale: .9, duration: 1, ease: 'power2.inOut' }, 2.7)
     .fromTo('#sc1', { backgroundColor: '#ffffff' }, { backgroundColor: '#8a7f74', duration: .5 }, 2.7);
 
