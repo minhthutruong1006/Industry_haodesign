@@ -69,10 +69,9 @@ body.menu-open .sitemap ul a{transform:none}
 .card img,.card video{display:block;width:100%;height:100%;object-fit:cover}
 /* 열 폭 고정: 간격이 벌어질 때 카드가 작아지지 않음 */
 .tilt{position:absolute;left:50%;top:50%;display:flex;gap:18px}
-.tcol{width:22vw;display:flex;flex-direction:column;gap:18px}
+.tcol{width:28vw;display:flex;flex-direction:column;gap:18px}
 .tcol .card img{backface-visibility:hidden}
 .tcol .card{position:relative;flex:none;aspect-ratio:3/2;border-radius:6px;box-shadow:0 8px 18px rgba(0,0,0,.12)}
-.reveal{position:absolute;inset:0;background:#fff;clip-path:circle(0% at 50% 50%)}
 .g4{position:absolute;left:50%;top:50%;width:62vw;display:grid;grid-template-columns:1fr 1fr}
 .g4 .card{position:relative;aspect-ratio:16/9;border-radius:0;box-shadow:none}
 .hpill{position:absolute;left:30vw;top:-40vh;width:24vw;height:180vh;border-radius:12vw}
@@ -438,21 +437,18 @@ gsap.from('.hero_word', { y: 50, opacity: 0, duration: 1.4, ease: 'expo.out', de
 (() => {
   const C = Array.from({ length: 18 }, (_, i) => `assets/haoc/c${String(i + 1).padStart(2, '0')}.jpg`);
   const card = (s, st = '', cls = '') => `<div class="card ${cls}" style="${st}"><img src="${s}" alt=""></div>`;
-  // ① 7열, 열마다 사진 순서를 다르게 + 위아래 무한 흐름용으로 2번 반복
-  const cols = Array.from({ length: 7 }, (_, c) => {
-    const list = Array.from({ length: 5 }, (_, k) => C[(c * 5 + k * 3) % 18]);
-    return `<div class="tcol">${[...list, ...list].map(s => card(s)).join('')}</div>`;
-  }).join('');
-  const scatter = [[29, 24, 42, 52], [-3, -8, 26, 20], [62, -6, 18, 44], [86, 20, 17, 32], [-4, 46, 24, 28],
-    [3, 80, 17, 24], [74, 76, 24, 30], [21, 82, 15, 20], [42, -10, 15, 22]]
-    .map(([l, t, w, h], i) => card(C[(i * 2 + 1) % 18], `left:${l}%;top:${t}%;width:${w}%;height:${h}%;z-index:${i ? 1 : 2}`, 'sct')).join('');
+  // 사진마다 히어로 전체에서 최대 2번: 그리드 20(18장 + c01·c02 한 번 더) + 2×2 4 + 카드 줄 7 + 흩어진 카드 5 = 36
+  // ① 4열 × 5장, 같은 사진이 이웃하지 않게 순서대로 채움(c01·c02 두 번째는 마지막 열 아래쪽)
+  const grid = [...C, C[0], C[1]];
+  const cols = Array.from({ length: 4 }, (_, c) => `<div class="tcol">${grid.slice(c * 5, c * 5 + 5).map(s => card(s)).join('')}</div>`).join('');
+  const scatter = [[29, 24, 42, 52, 17], [-3, -6, 26, 22, 4], [64, -6, 20, 40, 7], [-4, 50, 24, 30, 10], [72, 66, 26, 32, 12]]
+    .map(([l, t, w, h, n], i) => card(C[n], `left:${l}%;top:${t}%;width:${w}%;height:${h}%;z-index:${i ? 1 : 2}`, 'sct')).join('');
   const pills = ['#ffb199', '#ff6a3d', '#ffffff', '#1a1a1a'].map(c => `<i class="hpill" style="background:${c}"></i>`).join('');
   const circs = [[-14, -35, 60], [30, -20, 55], [72, -30, 50]].map(([l, t, w]) => `<i class="circ" style="left:${l}%;top:${t}%;width:${w}vw;height:${w}vw"></i>`).join('')
     + '<i class="circ k" style="left:58%;top:62%;width:16vw;height:16vw"></i>';
-  const rowList = [C[11], C[3], C[13], C[16], C[7], C[1], C[14], C[8], C[0]];
+  const rowList = [C[3], C[8], C[13], C[16], C[5], C[9], C[14]];  // 3번째(c14)가 가운데 카드와 같은 장
   document.getElementById('scenes').innerHTML = `
     <div class="sc" id="sc1"><div class="tilt" id="tilt">${cols}</div></div>
-    <div class="sc" id="sc3" style="background:#e83817"><div class="reveal" id="reveal">${card(C[4], 'left:14%;top:16%;width:34%;height:30%', 'ca')}${card(C[9], 'left:52%;top:54%;width:34%;height:30%', 'cb')}</div></div>
     <div class="sc" id="sc4" style="background:#e83817"><div class="g4" id="g4">${[C[2], C[6], C[11], C[15]].map(s => card(s)).join('')}</div>${pills}</div>
     <div class="sc" id="sc5" style="background:#fff">${circs}${card(C[13], '', 'mid')}<div class="row" id="row">${rowList.map(s => card(s)).join('')}</div></div>
     <div class="sc" id="scV" style="background:#1a1a1a"><video src="assets/hao-video.mp4" muted autoplay loop playsinline style="width:100%;height:100%;object-fit:cover"></video></div>
@@ -463,59 +459,52 @@ gsap.from('.hero_word', { y: 50, opacity: 0, duration: 1.4, ease: 'expo.out', de
   gsap.set('#tilt', { xPercent: -50, yPercent: -50 });
   gsap.set('#g4', { xPercent: -50, yPercent: -50 });
   gsap.set('#sc4 .hpill', { rotation: 35 });
-  // 전체 0.8배속 (15초 → 약 19초 반복)
+  // 전체 0.8배속 (약 14초 → 약 17.4초 반복)
   const tl = gsap.timeline({ repeat: -1 }).timeScale(.8);
   const cut = (from, to, at) => tl.set(to, { autoAlpha: 1 }, at).set(from, { autoAlpha: 0 }, at);
 
-  // 0~3.8s ① 한 열이 크게 보이다 기울며 축소 → 7열이 드러나고, 홀수 열은 위로·짝수 열은 아래로 엇갈려 흐름
+  // 0~3.8s ① 한 열이 크게 보이다 기울며 축소 → 4열이 드러나고, 홀수 열은 위로·짝수 열은 아래로 엇갈려 흐름
   tl.set('#sc1', { autoAlpha: 1 }, 0)
     .fromTo('#tilt', { rotation: -2, scale: 2.3 }, { rotation: -14, duration: 1.4, ease: 'power2.inOut' }, 0)
     .to('#tilt', { scale: 1, duration: 2.7, ease: 'power2.inOut' }, 0)
-    .fromTo('#sc1 .tcol:nth-child(odd)', { yPercent: -8 }, { yPercent: -22, duration: 3.8, ease: 'none' }, 0)
-    .fromTo('#sc1 .tcol:nth-child(even)', { yPercent: -26 }, { yPercent: -12, duration: 3.8, ease: 'none' }, 0)
+    .fromTo('#sc1 .tcol:nth-child(odd)', { yPercent: 4 }, { yPercent: -4, duration: 3.8, ease: 'none' }, 0)
+    .fromTo('#sc1 .tcol:nth-child(even)', { yPercent: -4 }, { yPercent: 4, duration: 3.8, ease: 'none' }, 0)
     // 2.7~3.8s 열·카드 간격이 벌어지며 배경이 웜그레이로
     .fromTo('#tilt, #sc1 .tcol', { gap: 18 }, { gap: () => innerWidth * .06, duration: 1, ease: 'power2.inOut' }, 2.7)
     .to('#tilt', { scale: .9, duration: 1, ease: 'power2.inOut' }, 2.7)
     .fromTo('#sc1', { backgroundColor: '#ffffff' }, { backgroundColor: '#8a7f74', duration: .5 }, 2.7);
 
+  // 3.8s ④ 붙어 있던 2×2가 벌어지고 → 알약 띠가 왼쪽 아래에서 오른쪽 위로 차례로 쓸고 지나감
+  cut('#sc1', '#sc4', 3.8);
+  tl.fromTo('#g4', { gap: 0, scale: 1.08 }, { gap: () => innerWidth * .025, scale: 1, duration: .5, ease: 'power2.out' }, 3.85)
+    .fromTo('#sc4 .hpill', { x: '-95vw', y: '95vh' }, { x: '95vw', y: '-95vh', duration: 1.1, stagger: .09, ease: 'power2.inOut' }, 4.25);
 
-  // 3.8s ③ 레드 바탕 가운데서 흰 원이 마스크처럼 커지며 카드 2장을 드러내고, 카드는 서서히 벌어짐
-  cut('#sc1', '#sc3', 3.8);
-  tl.fromTo('#reveal', { clipPath: 'circle(0% at 50% 50%)' }, { clipPath: 'circle(75% at 50% 50%)', duration: .6, ease: 'power2.inOut' }, 3.8)
-    .fromTo('#sc3 .ca', { x: '2vw', y: '2vh' }, { x: '-3vw', y: '-2vh', duration: 1.15, ease: 'power1.out' }, 3.8)
-    .fromTo('#sc3 .cb', { x: '-2vw', y: '-2vh' }, { x: '3vw', y: '2vh', duration: 1.15, ease: 'power1.out' }, 3.8);
+  // 5s ⑤ 띠 뒤로 원형 패턴 장면이 대각선 와이프로 열림 → 가운데 카드 → 양옆 카드가 붙으며 줄이 되어 왼쪽으로 흐름
+  tl.set('#sc5', { autoAlpha: 1 }, 5)
+    .fromTo('#sc5', { clipPath: 'polygon(0% 100%, 0% 100%, 0% 100%)' }, { clipPath: 'polygon(0% 100%, 260% 100%, 0% -160%)', duration: .5, ease: 'power2.in' }, 5)
+    .set('#sc4', { autoAlpha: 0 }, 5.5)
+    .fromTo('#sc5 .circ', { scale: .5 }, { scale: 1, duration: 1, stagger: .05, ease: 'expo.out' }, 5)
+    .set('#row', { autoAlpha: 0 }, 5)
+    .fromTo('#sc5 .mid', { scale: .4, autoAlpha: 0 }, { scale: 1.3, autoAlpha: 1, duration: .7, ease: 'power3.out' }, 5.45)
+    .to('#sc5 .mid', { scale: 1, duration: .45, ease: 'power2.inOut' }, 5.95)
+    .set('#sc5 .mid', { autoAlpha: 0 }, 6.4).set('#row', { autoAlpha: 1 }, 6.4)
+    .fromTo('#row', { x: 0 }, { x: () => -innerWidth * .52, duration: 1.9, ease: 'none' }, 6.4)
+    .to('#sc5 .circ', { rotation: 8, scale: 1.08, duration: 2.4, ease: 'none' }, 5.9);
 
-  // 4.95s ④ 붙어 있던 2×2가 벌어지고 → 알약 띠가 왼쪽 아래에서 오른쪽 위로 차례로 쓸고 지나감
-  cut('#sc3', '#sc4', 4.95);
-  tl.fromTo('#g4', { gap: 0, scale: 1.08 }, { gap: () => innerWidth * .025, scale: 1, duration: .5, ease: 'power2.out' }, 5)
-    .fromTo('#sc4 .hpill', { x: '-95vw', y: '95vh' }, { x: '95vw', y: '-95vh', duration: 1.1, stagger: .09, ease: 'power2.inOut' }, 5.4);
+  // 8.3s ⑥ 예손의 기기 목업 자리에 하오디자인 메인 영상
+  cut('#sc5', '#scV', 8.3);
+  tl.fromTo('#scV video', { scale: 1.15 }, { scale: 1, duration: 1.6, ease: 'power2.out' }, 8.3);
 
-  // 6.15s ⑤ 띠 뒤로 원형 패턴 장면이 대각선 와이프로 열림 → 가운데 카드 → 양옆 카드가 붙으며 줄이 되어 왼쪽으로 흐름
-  tl.set('#sc5', { autoAlpha: 1 }, 6.15)
-    .fromTo('#sc5', { clipPath: 'polygon(0% 100%, 0% 100%, 0% 100%)' }, { clipPath: 'polygon(0% 100%, 260% 100%, 0% -160%)', duration: .5, ease: 'power2.in' }, 6.15)
-    .set('#sc4', { autoAlpha: 0 }, 6.65)
-    .fromTo('#sc5 .circ', { scale: .5 }, { scale: 1, duration: 1, stagger: .05, ease: 'expo.out' }, 6.15)
-    .set('#row', { autoAlpha: 0 }, 6.15)
-    .fromTo('#sc5 .mid', { scale: .4, autoAlpha: 0 }, { scale: 1.3, autoAlpha: 1, duration: .7, ease: 'power3.out' }, 6.6)
-    .to('#sc5 .mid', { scale: 1, duration: .45, ease: 'power2.inOut' }, 7.1)
-    .set('#sc5 .mid', { autoAlpha: 0 }, 7.55).set('#row', { autoAlpha: 1 }, 7.55)
-    .fromTo('#row', { x: 0 }, { x: () => -innerWidth * .52, duration: 1.9, ease: 'none' }, 7.55)
-    .to('#sc5 .circ', { rotation: 8, scale: 1.08, duration: 2.4, ease: 'none' }, 7.05);
-
-  // 9.45s ⑥ 예손의 기기 목업 자리에 하오디자인 메인 영상
-  cut('#sc5', '#scV', 9.45);
-  tl.fromTo('#scV video', { scale: 1.15 }, { scale: 1, duration: 1.6, ease: 'power2.out' }, 9.45);
-
-  // 11.05s ⑦ 흩어진 카드가 바깥에서 모여들고 천천히 떠다님
-  cut('#scV', '#sc6', 11.05);
+  // 9.9s ⑦ 흩어진 카드가 바깥에서 모여들고 천천히 떠다님
+  cut('#scV', '#sc6', 9.9);
   tl.fromTo('#sc6 .sct', { autoAlpha: 0, scale: .7, x: (i, el) => (parseFloat(el.style.left) + parseFloat(el.style.width) / 2 - 50) * 8, y: (i, el) => (parseFloat(el.style.top) + parseFloat(el.style.height) / 2 - 50) * 8 },
-    { autoAlpha: 1, scale: 1, x: 0, y: 0, duration: 1.2, stagger: .05, ease: 'expo.out' }, 11.05)
-    .to('#sc6 .sct', { y: '-=18', duration: 1.6, stagger: .03, ease: 'sine.inOut' }, 12.25);
+    { autoAlpha: 1, scale: 1, x: 0, y: 0, duration: 1.2, stagger: .05, ease: 'expo.out' }, 9.9)
+    .to('#sc6 .sct', { y: '-=18', duration: 1.6, stagger: .03, ease: 'sine.inOut' }, 11.1);
 
-  // 13.65s ⑧ 로고로 마무리 후 처음부터 반복
-  cut('#sc6', '#sc7', 13.65);
-  tl.fromTo('#sc7 b', { scale: .9, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: .5, ease: 'power2.out' }, 13.65)
-    .to({}, { duration: .9 }, 14.15);
+  // 12.5s ⑧ 로고로 마무리 후 처음부터 반복
+  cut('#sc6', '#sc7', 12.5);
+  tl.fromTo('#sc7 b', { scale: .9, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: .5, ease: 'power2.out' }, 12.5)
+    .to({}, { duration: .9 }, 13);
 })();
 // 스크롤: 그라데이션 색이 빠짐 → 'I' 획을 중심으로 글자 확대 → 영상이 화면 가득
 const heroOrigin = () => {
